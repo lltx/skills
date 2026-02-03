@@ -1,33 +1,66 @@
 ---
 name: code-tidy
-description: 整理本地未提交的 Git Java 代码。使用场景：(1) 对新增/修改的 Java 类和方法添加 Javadoc 注释，(2) 更新代码中的日期注释（@author、@since、Copyright 年份），(3) 使用 spring-javaformat 格式化代码。当用户说"整理代码"、"添加注释"、"格式化 Java"、"更新日期注释"时触发。
+description: 整理 Java 代码。使用场景：(1) 对新增/修改的 Java 类和方法添加 Javadoc 注释，(2) 更新代码中的日期注释（@author、@since、Copyright 年份），(3) 使用 spring-javaformat 格式化代码。当用户说"整理代码"、"添加注释"、"格式化 Java"、"更新日期注释"时触发。
+argument-hint: [maven-root]
 metadata:
   author: lengleng
-  version: "1.0.0"
+  version: "1.2.0"
 ---
 
-# Code Tidy v1.0.0
+# Code Tidy v1.2.0
 
-整理本地未提交的 Git Java 代码，添加 Javadoc 注释并更新日期。
+整理 Git 未提交的 Java 代码，添加 Javadoc 注释并更新日期。
+
+## 参数说明
+
+| 参数 | 说明 | 示例 |
+|------|------|------|
+| `$0` | Maven 项目根路径（包含 pom.xml 的目录） | `/code-tidy pigx/` |
+| 无参数 | 自动查找最近的 pom.xml 所在目录 | `/code-tidy` |
 
 ## 工作流程
 
-### 1. 获取未提交的 Java 文件
+### 1. 定位 Maven 项目根目录
 
+**如果提供了参数 `$0`**：
+- 验证 `$0/pom.xml` 是否存在
+- 如果不存在，报错并提示用户
+
+**如果未提供参数**：
 ```bash
-git diff --name-only --diff-filter=AM HEAD | grep '\.java$'
+# 从当前目录向上查找 pom.xml
+find . -maxdepth 3 -name "pom.xml" -type f | head -1 | xargs dirname
 ```
 
-如果需要包含未跟踪文件：
+### 2. 获取 Git 未提交的 Java 文件
+
+**重要**：必须先 `cd` 到 Maven 项目根目录，再执行 git 命令（因为项目可能是独立的 git 仓库）。
+
+只处理 Git 未提交（已修改、新增、未跟踪）的 Java 文件：
+
 ```bash
+# 切换到项目目录后执行
+cd ${MAVEN_ROOT}
+
+# 获取所有未提交的 Java 文件（已暂存、已修改、新增）
 git status --porcelain | grep '\.java$' | awk '{print $2}'
 ```
 
-### 2. 添加 Javadoc 注释
+**如果没有未提交的 Java 文件**：提示用户并退出。
 
-**重要**：日期值必须通过 `date +"%Y-%m-%d"` 命令动态获取，不要使用写死的日期。
+### 3. 获取当前日期
 
-对每个文件执行：
+```bash
+# 获取当前日期（YYYY-MM-DD 格式）
+CURRENT_DATE=$(date +"%Y-%m-%d")
+
+# 获取当前年份
+CURRENT_YEAR=$(date +"%Y")
+```
+
+### 4. 添加/更新 Javadoc 注释
+
+对每个未提交的 Java 文件执行：
 
 **类注释模板**（如果缺失则添加）：
 ```java
@@ -35,11 +68,9 @@ git status --porcelain | grep '\.java$' | awk '{print $2}'
  * 类功能描述
  *
  * @author lengleng
- * @date $(date +"%Y-%m-%d")
+ * @date ${CURRENT_DATE}
  */
 ```
-
-注意：`$(date +"%Y-%m-%d")` 表示执行命令获取当前日期，实际写入文件时使用命令输出值（如 `2026-02-03`）。
 
 **方法注释模板**（对 public/protected 方法添加）：
 ```java
@@ -51,50 +82,27 @@ git status --porcelain | grep '\.java$' | awk '{print $2}'
  */
 ```
 
-### 3. 更新日期注释
-
-**先获取当前时间**：
-
-```bash
-# 获取当前日期（YYYY-MM-DD 格式）
-date +"%Y-%m-%d"
-
-# 获取当前年份
-date +"%Y"
-```
-
-使用获取的时间更新注释：
+### 5. 更新日期注释
 
 | 类型 | 查找模式 | 更新为 |
 |------|----------|--------|
-| @author 日期 | `@date YYYY/MM/DD` 或 `@date YYYY-MM-DD` | `date +"%Y-%m-%d"` 的输出 |
-| @since 版本 | `@since X.X.X` | 保持不变（版本号由用户指定） |
-| Copyright | `Copyright © YYYY` 或 `Copyright YYYY` | `date +"%Y"` 的输出 |
+| @date | `@date YYYY/MM/DD` 或 `@date YYYY-MM-DD` | `${CURRENT_DATE}` |
+| @since | `@since X.X.X` | 保持不变 |
+| Copyright | `Copyright © YYYY` 或 `Copyright YYYY` | `${CURRENT_YEAR}` |
 
-**日期格式**：使用 `YYYY-MM-DD` 格式（符合项目 linter 规范）
+### 6. 格式化代码
 
-### 4. 格式化代码（可选）
-
-**前置条件检查**：
-
-1. 检查是否有修改的 Java 文件：
+**前置条件**：检查项目是否配置了 spring-javaformat 插件：
 ```bash
-git diff --name-only --diff-filter=AM HEAD | grep '\.java$'
+grep -q 'spring-javaformat-maven-plugin' ${MAVEN_ROOT}/pom.xml
 ```
-**如果没有修改的 Java 文件**：跳过格式化，不执行任何格式化命令。
 
-2. 检查项目是否配置了 spring-javaformat 插件：
+**如果已配置**：对修改的文件执行格式化：
 ```bash
-grep -q 'spring-javaformat-maven-plugin' pom.xml
+cd ${MAVEN_ROOT} && mvn spring-javaformat:apply -Dformatter.includes="**/File1.java,**/File2.java"
 ```
-**如果未配置**：跳过格式化步骤，提示用户项目未配置 spring-javaformat。
 
-**执行格式化**（仅当有修改且已配置插件时）：
-
-使用 `-Dformatter.includes` 指定具体修改的文件：
-```bash
-mvn spring-javaformat:apply -Dformatter.includes="**/File1.java,**/File2.java"
-```
+**如果未配置**：跳过格式化，提示用户。
 
 ## 注释规范
 
@@ -114,14 +122,15 @@ mvn spring-javaformat:apply -Dformatter.includes="**/File1.java,**/File2.java"
 ### 跳过注释的情况
 
 - getter/setter 方法
-- `@Override` 注解的方法（已有父类文档）
+- `@Override` 注解的方法
 - private 方法（除非逻辑复杂）
 - 已有完整注释的类/方法
 
 ## 执行顺序
 
-1. 列出待处理的 Java 文件
-2. 逐个文件添加/更新注释
-3. 更新所有日期相关注释
-4. 执行 spring-javaformat 格式化
-5. 展示修改摘要
+1. 定位 Maven 项目根目录
+2. 获取 Git 未提交的 Java 文件列表
+3. 获取当前日期
+4. 逐个文件添加/更新注释
+5. 执行 spring-javaformat 格式化
+6. 展示修改摘要
