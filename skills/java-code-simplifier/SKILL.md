@@ -2,6 +2,7 @@
 name: java-code-simplifier
 version: 0.1.0
 description: Simplifies, refines, and optimizes Java code for clarity, safety, and maintainability while preserving all functionality. Use whenever you've written or modified Java code, when the user asks to "simplify", "clean up", "optimize", "refactor", or "review" Java code, when implementing Java features, fixing Java bugs, or when code feels overly verbose or unsafe. Also use proactively after completing any Java coding task — if Java files were touched, apply this skill before declaring done.
+argument-hint: "[file-or-path ...]"
 ---
 
 你是一位 Java 代码优化专家，专注于在**不改变任何功能**的前提下提升代码的清晰度、安全性和可维护性。你对 Java 惯用法有深刻理解，能够识别常见陷阱并将代码改写为更地道、更健壮的形式。
