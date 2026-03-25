@@ -11,7 +11,7 @@ description: Simplifies, refines, and optimizes Java code for clarity, safety, a
 
 2. **清晰优先于简洁**：显式代码通常优于过于紧凑的代码。避免嵌套三元运算符，避免把太多逻辑压缩成一行。
 
-3. **遵循 Java 惯用法**：使用 Java 平台提供的工具（`Optional`、`try-with-resources`、Stream API、`java.util.concurrent` 等），而不是手写等效逻辑。
+3. **遵循 Java 惯用法**：使用 Java 平台及常用框架提供的工具（`Optional`、`try-with-resources`、Stream API、`java.util.concurrent`、`Objects`、Spring `StringUtils` 等），而不是手写等效逻辑。
 
 4. **聚焦范围**：优先处理本次会话中**最近修改**的代码。除非用户明确要求，不要大范围重构未接触的代码。
 
@@ -35,29 +35,58 @@ description: Simplifies, refines, and optimizes Java code for clarity, safety, a
 
 ### 1. 空值安全
 
+优先使用工具类而非手写 `== null` 判断，代码更简洁也更统一。
+
+**对象判空：用 `Objects` 工具类**
 ```java
-// ❌ NPE 风险：链式调用无保护
+// ❌ 手写判断
+if (user == null) throw new IllegalArgumentException("user must not be null");
+if (obj == null) return true;
+
+// ✅ Objects 工具类
+Objects.requireNonNull(user, "user must not be null"); // 参数校验
+Objects.isNull(obj)       // 判断为 null
+Objects.nonNull(obj)      // 判断非 null（尤其适合 stream filter）
+users.stream().filter(Objects::nonNull).collect(Collectors.toList());
+```
+
+**字符串判空：用 Spring `StringUtils`**
+```java
+// ❌ 手写字符串判断
+if (str == null || str.isEmpty()) { }
+if (str == null || str.trim().isEmpty()) { }
+if (str != null && !str.isEmpty()) { }
+
+// ✅ Spring StringUtils（org.springframework.util.StringUtils）
+StringUtils.isEmpty(str)        // null 或 ""
+StringUtils.hasLength(str)      // 非 null 且非 ""
+StringUtils.hasText(str)        // 非 null、非 ""、非纯空白
+StringUtils.hasText(str)        // 最常用：替代 != null && !trim().isEmpty()
+```
+
+**链式调用保护：用 `Optional`**
+```java
+// ❌ NPE 风险
 String name = user.getName().toUpperCase();
 
-// ✅ 用 Optional 保护
+// ✅ Optional 保护
 String name = Optional.ofNullable(user.getName())
     .map(String::toUpperCase)
     .orElse("");
-
-// ✅ 或提前返回
-if (user.getName() == null) return "";
-return user.getName().toUpperCase();
 ```
 
 **重点检查：**
+- 手写 `== null` / `!= null` 判断可改用 `Objects.isNull` / `Objects.nonNull`
+- 手写字符串空判断可改用 `StringUtils.hasText` / `StringUtils.hasLength`
 - 链式方法调用缺少空值检查
 - `Optional.get()` 未先调用 `isPresent()`
 - 方法返回 `null` 而本可返回 `Optional` 或空集合
 - 公共 API 参数缺少 `@NonNull` / `@Nullable` 注解
 
 **建议方向：**
+- 参数强制非空用 `Objects.requireNonNull()`
+- 字符串存在性判断统一用 `StringUtils.hasText()`
 - 可为空的返回值用 `Optional` 包装
-- 构造器/方法参数用 `Objects.requireNonNull()` 校验
 - 空集合返回 `Collections.emptyList()` 而非 `null`
 
 ---
