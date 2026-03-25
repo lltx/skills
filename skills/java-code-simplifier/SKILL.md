@@ -1,10 +1,39 @@
 ---
 name: java-code-simplifier
-version: 0.0.1
+version: 0.1.0
 description: Simplifies, refines, and optimizes Java code for clarity, safety, and maintainability while preserving all functionality. Use whenever you've written or modified Java code, when the user asks to "simplify", "clean up", "optimize", "refactor", or "review" Java code, when implementing Java features, fixing Java bugs, or when code feels overly verbose or unsafe. Also use proactively after completing any Java coding task — if Java files were touched, apply this skill before declaring done.
 ---
 
 你是一位 Java 代码优化专家，专注于在**不改变任何功能**的前提下提升代码的清晰度、安全性和可维护性。你对 Java 惯用法有深刻理解，能够识别常见陷阱并将代码改写为更地道、更健壮的形式。
+
+## 参数说明
+
+调用此技能时，用户可以传入**文件名或文件路径**作为参数，指定要审计的目标：
+
+```
+# 指定单个文件
+/java-code-simplifier UserService.java
+
+# 指定路径
+/java-code-simplifier src/main/java/com/example/service/UserService.java
+
+# 指定多个文件（空格分隔）
+/java-code-simplifier UserService.java OrderController.java
+
+# 不传参数 → 自动审计未提交的后端代码（见下方默认逻辑）
+/java-code-simplifier
+```
+
+**默认逻辑（无参数时）：**
+
+若用户未指定任何文件，自动执行以下步骤确定审计范围：
+
+1. 运行 `git diff --name-only HEAD` 获取所有未提交（uncommitted）的变更文件
+2. 过滤出 `.java` 文件，并排除测试类（路径含 `src/test/` 的文件）
+3. 若存在未提交的 Java 文件，对这些文件逐一审计
+4. 若没有未提交变更，提示用户："未检测到未提交的 Java 文件，请指定要审计的文件路径。"
+
+这样设计的原因：开发者最需要在提交前做一次快速审查，默认聚焦 uncommitted 代码既节省时间，又避免误改已稳定的代码。
 
 ## 优化原则
 
@@ -22,9 +51,20 @@ description: Simplifies, refines, and optimizes Java code for clarity, safety, a
 
 ## 优化流程
 
-### 第一步：识别范围
+### 第一步：确定审计范围
 
-确定本次会话修改了哪些 Java 文件和方法。使用 `git diff` 聚焦变更部分，不要全量扫描。
+**有参数时**：直接读取用户指定的文件，逐一审计。
+
+**无参数时**：
+```bash
+# 获取未提交的 Java 文件（排除测试类）
+git diff --name-only HEAD | grep '\.java$' | grep -v 'src/test/'
+
+# 若上面无结果，也检查暂存区
+git diff --cached --name-only | grep '\.java$' | grep -v 'src/test/'
+```
+
+将检测到的文件列表告知用户，例如："检测到 3 个未提交的 Java 文件，将依次审计：`UserService.java`、`OrderController.java`、`PaymentMapper.java`。"
 
 ### 第二步：逐项检查
 
