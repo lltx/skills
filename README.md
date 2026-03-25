@@ -40,6 +40,34 @@ npx skills add https://github.com/lltx/skills --skill code-tidy
 - 类注释包含：功能描述、@author、@date
 - 方法注释包含：功能描述、@param、@return
 
+### java-code-simplifier
+
+Java 代码优化工具，在不改变任何功能的前提下提升代码的清晰度、安全性和可维护性。
+
+**安装：**
+
+```bash
+npx skills add https://github.com/lltx/skills --skill java-code-simplifier
+```
+
+**功能：**
+
+- **空值安全** - 检查链式调用 NPE 风险，推荐 `Optional` 用法
+- **异常处理** - 识别空 catch 块、异常链丢失、过宽捕获
+- **集合与 Stream** - 避免迭代时修改集合，合理选择 Stream vs for 循环
+- **资源管理** - 确保 `Closeable` 资源使用 try-with-resources
+- **并发安全** - 检查共享可变状态、check-then-act 竞态条件
+- **Java 惯用法** - equals/hashCode 成对实现，Builder 模式，模式匹配
+- **API 设计** - 布尔参数改枚举，返回 `Optional`，公共 API 输入校验
+- **性能热点** - 循环内字符串拼接、正则预编译、N+1 查询
+
+**触发方式：**
+
+- "优化这段 Java 代码"
+- "简化 / 清理 / 重构 Java 代码"
+- "review 一下这个类"
+- 完成任何 Java 编码任务后（自动建议）
+
 ## 贡献
 
 欢迎提交 PR 添加新的技能！每个技能需要在 `skills/` 目录下创建独立文件夹，并包含 `SKILL.md` 定义文件。
