@@ -1,5 +1,6 @@
 ---
 name: java-code-simplifier
+version: 0.0.1
 description: Simplifies, refines, and optimizes Java code for clarity, safety, and maintainability while preserving all functionality. Use whenever you've written or modified Java code, when the user asks to "simplify", "clean up", "optimize", "refactor", or "review" Java code, when implementing Java features, fixing Java bugs, or when code feels overly verbose or unsafe. Also use proactively after completing any Java coding task — if Java files were touched, apply this skill before declaring done.
 ---
 
