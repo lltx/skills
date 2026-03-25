@@ -21,9 +21,35 @@ npx skills add https://github.com/lltx/skills --skill java-code-simplifier
 - **API 设计** - 布尔参数改枚举，返回 `Optional`，公共 API 输入校验
 - **性能热点** - 循环内字符串拼接、正则预编译、N+1 查询
 
+## 用法
+
+### 直接调用（指定文件）
+
+```bash
+# 审计单个文件
+/java-code-simplifier UserService.java
+
+# 审计指定路径
+/java-code-simplifier src/main/java/com/example/service/UserService.java
+
+# 同时审计多个文件
+/java-code-simplifier UserService.java OrderController.java
+```
+
+### 默认调用（无参数）
+
+不传参数时，自动检测并审计所有**未提交的后端 Java 文件**（排除测试类）：
+
+```bash
+/java-code-simplifier
+# → 等价于：git diff --name-only HEAD | grep '\.java$' | grep -v 'src/test/'
+```
+
+适合在 `git commit` 前做一次快速审查。
+
 ## 触发方式
 
-Claude Code 会在以下场景自动使用此技能：
+Claude Code 也会在以下场景自动使用此技能：
 
 - "优化这段 Java 代码"
 - "简化 / 清理 / 重构 Java 代码"
