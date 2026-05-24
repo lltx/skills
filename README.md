@@ -68,14 +68,14 @@ npx skills add https://github.com/lltx/skills --skill java-code-simplifier
 - "review 一下这个类"
 - 完成任何 Java 编码任务后（自动建议）
 
-### codex-network-doctor
+### network-doctor
 
 本地网络诊断工具，用只读基线先定位网速慢、延迟高、DNS 慢、Wi-Fi 弱、VPN/代理异常、MTU 或后台流量问题，再按“一次只改一个变量”的方式给出可回滚建议。
 
 **安装：**
 
 ```bash
-npx skills add https://github.com/lltx/skills --skill codex-network-doctor
+npx skills add https://github.com/lltx/skills --skill network-doctor
 ```
 
 **功能：**

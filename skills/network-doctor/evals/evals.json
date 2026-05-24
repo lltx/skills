@@ -1,10 +1,10 @@
 {
-  "skill_name": "codex-network-doctor",
+  "skill_name": "network-doctor",
   "evals": [
     {
       "id": 1,
       "prompt": "我的运营商说给了 1.2Gbps，但我现在只有 55Mbps。帮我把网速弄快，别乱改。",
-      "expected_output": "Triggers codex-network-doctor, starts with read-only baseline, separates ISP/Wi-Fi/DNS/VPN/background-process causes, and does not modify settings without confirmation.",
+      "expected_output": "Triggers network-doctor, starts with read-only baseline, separates ISP/Wi-Fi/DNS/VPN/background-process causes, and does not modify settings without confirmation.",
       "files": []
     },
     {
