@@ -1,6 +1,6 @@
 # Skills 技能库
 
-一个可复用的自动化技能集合，专注于提升 Java 开发工作流效率。
+一个可复用的自动化技能集合，覆盖 Java 开发、本地诊断和文档查询等工作流。
 
 ## 快速开始
 
@@ -67,6 +67,32 @@ npx skills add https://github.com/lltx/skills --skill java-code-simplifier
 - "简化 / 清理 / 重构 Java 代码"
 - "review 一下这个类"
 - 完成任何 Java 编码任务后（自动建议）
+
+### codex-network-doctor
+
+本地网络诊断工具，用只读基线先定位网速慢、延迟高、DNS 慢、Wi-Fi 弱、VPN/代理异常、MTU 或后台流量问题，再按“一次只改一个变量”的方式给出可回滚建议。
+
+**安装：**
+
+```bash
+npx skills add https://github.com/lltx/skills --skill codex-network-doctor
+```
+
+**功能：**
+
+- **只读基线优先** - 先采集吞吐、延迟、丢包、DNS、路由、Wi-Fi、MTU、代理/VPN 和进程信号
+- **分层诊断** - 区分 ISP、Wi-Fi/LAN、DNS、VPN/代理、MTU/TCP 和后台流量原因
+- **安全变更门禁** - DNS、MTU、代理、VPN、防火墙、网络位置、`sudo` 等修改必须先确认
+- **前后对比验证** - 每次只改一个变量，并用同一组指标复测
+- **回滚要求** - 所有修改都必须给出旧值、恢复命令或 UI 路径
+
+**触发方式：**
+
+- "网络慢 / 网速慢 / 网速优化"
+- "网络延迟高 / packet loss"
+- "Wi-Fi 慢 / DNS 慢 / MTU 问题"
+- "VPN 或代理影响网速"
+- "帮我安全地把网络弄快"
 
 ## 贡献
 
