@@ -94,6 +94,50 @@ npx skills add https://github.com/lltx/skills --skill network-doctor
 - "VPN 或代理影响网速"
 - "帮我安全地把网络弄快"
 
+### audit-agents-md
+
+审计项目或全局的技能与 `AGENTS.md`，检查触发过宽、流程过重、授权冲突、失效引用和跨技能步骤衔接，并给出有文件位置与具体场景支撑的改写建议。
+
+**安装：**
+
+```bash
+npx skills add https://github.com/lltx/skills --skill audit-agents-md
+```
+
+**用法：**
+
+安装后，在支持技能的 Agent 中明确给出审计范围和是否修改。以下是 Codex 的调用示例；其他客户端按其技能调用方式使用。
+
+审计当前项目：
+
+```text
+$audit-agents-md 审计当前项目内的所有技能和 AGENTS.md，只输出问题与改写建议，暂不修改文件。
+```
+
+审计全局个人指令：
+
+```text
+$audit-agents-md 审计 ~/.agents/skills、~/.codex/skills 及全局 AGENTS.md，给出完整覆盖清单和优先处理的问题。
+```
+
+按指定范围直接整改（将路径替换为实际项目路径）：
+
+```text
+$audit-agents-md 审计并精简 /absolute/project 内的技能和 AGENTS.md，直接修复已确认的触发过宽、重复指令和失效引用，保留原有业务约束，并验证修改。
+```
+
+需要包含 `CLAUDE.md` 时，在请求中明确说明。使用自定义 `CODEX_HOME` 时，全局范围填写实际的技能和指令路径。
+
+**交付内容：**
+
+- 每份目标文件的覆盖状态：已审阅、仅静态扫描或无法读取。
+- 问题位置、触发场景、具体后果和最小改写建议，区分已确认问题与待验证候选。
+- 已要求整改时，提供实际修改、必要验证和剩余问题；只要求审计时交付报告。
+
+内置清单脚本需要 Python 3，安装 PyYAML 后可完整解析 YAML 前言；缺少 PyYAML 时仍可扫描，并标注解析限制。脚本只建立静态清单，语义审阅由 Agent 完成；文件字数变化不代表模型性能已经改善。
+
+[查看技能定义](skills/audit-agents-md/SKILL.md) · [方法来源](skills/audit-agents-md/references/source-notes.md)
+
 ## 贡献
 
 欢迎提交 PR 添加新的技能！每个技能需要在 `skills/` 目录下创建独立文件夹，并包含 `SKILL.md` 定义文件。
