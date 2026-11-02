@@ -156,6 +156,32 @@ npx skills add https://github.com/lltx/skills --skill asd-ste100-zh
 
 [查看技能说明](skills/asd-ste100-zh/README.md) · [查看技能定义](skills/asd-ste100-zh/SKILL.md)
 
+### ChatSPSS
+
+使用用户提供的 CSV、Excel、SPSS 或 Stata 数据执行 22 类基础统计任务，并完整展示 Markdown 结果表后解读。
+
+**安装：**
+
+```bash
+npx skills add https://github.com/lltx/skills --skill chatspss
+```
+
+**使用场景：**
+
+- 问卷描述统计、频数、组间比较与相关/回归分析
+- Cronbach α 信度及 EFA（含 KMO/Bartlett、方差解释、载荷与共同度）
+- 识别 CFA/SEM、中介调节、纵向/面板等复杂需求，先查参考文档说明公开版尚未实现的范围
+
+**触发示例：**
+
+```text
+用 ChatSPSS 分析这份问卷，做描述统计并原样展示全部结果表。
+```
+
+需要 Python 3.12/3.13 及 [requirements.txt](skills/chatspss/requirements.txt) 中的依赖；数据分析在本地运行，不自动上传数据。MIT-0 授权；独立基础版，不代表完整平台。EFA 不稳定时会拒绝输出，不能单凭 EFA 宣称整体效度已通过。
+
+[查看技能定义](skills/chatspss/SKILL.md) · [公开源仓库](https://github.com/jessepwj/ChatSPSS)
+
 ## 贡献
 
 欢迎提交 PR 添加新的技能！每个技能需要在 `skills/` 目录下创建独立文件夹，并包含 `SKILL.md` 定义文件。
